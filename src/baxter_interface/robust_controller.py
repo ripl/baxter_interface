@@ -38,7 +38,7 @@ class RobustController(object):
     (STATE_IDLE,
      STATE_STARTING,
      STATE_RUNNING,
-     STATE_STOPPING) = range(4)
+     STATE_STOPPING) = list(range(4))
 
     def __init__(self, namespace, enable_msg, disable_msg, timeout=60):
         """

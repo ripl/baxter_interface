@@ -117,11 +117,11 @@ class Limb(object):
 
         err_msg = ("%s limb init failed to get current joint_states "
                    "from %s") % (self.name.capitalize(), joint_state_topic)
-        baxter_dataflow.wait_for(lambda: len(self._joint_angle.keys()) > 0,
+        baxter_dataflow.wait_for(lambda: len(list(self._joint_angle.keys())) > 0,
                                  timeout_msg=err_msg)
         err_msg = ("%s limb init failed to get current endpoint_state "
                    "from %s") % (self.name.capitalize(), ns + 'endpoint_state')
-        baxter_dataflow.wait_for(lambda: len(self._cartesian_pose.keys()) > 0,
+        baxter_dataflow.wait_for(lambda: len(list(self._cartesian_pose.keys())) > 0,
                                  timeout_msg=err_msg)
 
     def _on_joint_states(self, msg):
@@ -345,8 +345,8 @@ class Limb(object):
         @type raw: bool
         @param raw: advanced, direct position control mode
         """
-        self._command_msg.names = positions.keys()
-        self._command_msg.command = positions.values()
+        self._command_msg.names = list(positions.keys())
+        self._command_msg.command = list(positions.values())
         if raw:
             self._command_msg.mode = JointCommand.RAW_POSITION_MODE
         else:
@@ -365,8 +365,8 @@ class Limb(object):
         @type velocities: dict({str:float})
         @param velocities: joint_name:velocity command
         """
-        self._command_msg.names = velocities.keys()
-        self._command_msg.command = velocities.values()
+        self._command_msg.names = list(velocities.keys())
+        self._command_msg.command = list(velocities.values())
         self._command_msg.mode = JointCommand.VELOCITY_MODE
         self._pub_joint_cmd.publish(self._command_msg)
 
@@ -382,8 +382,8 @@ class Limb(object):
         @type torques: dict({str:float})
         @param torques: joint_name:torque command
         """
-        self._command_msg.names = torques.keys()
-        self._command_msg.command = torques.values()
+        self._command_msg.names = list(torques.keys())
+        self._command_msg.command = list(torques.values())
         self._command_msg.mode = JointCommand.TORQUE_MODE
         self._pub_joint_cmd.publish(self._command_msg)
 
@@ -398,8 +398,8 @@ class Limb(object):
         @type timeout: float
         @param timeout: seconds to wait for move to finish [15]
         """
-        angles = dict(zip(self.joint_names(),
-                          [0.0, -0.55, 0.0, 0.75, 0.0, 1.26, 0.0]))
+        angles = dict(list(zip(self.joint_names(),
+                          [0.0, -0.55, 0.0, 0.75, 0.0, 1.26, 0.0])))
         return self.move_to_joint_positions(angles, timeout)
 
     def move_to_joint_positions(self, positions, timeout=15.0,
@@ -425,7 +425,7 @@ class Limb(object):
 
         def filtered_cmd():
             # First Order Filter - 0.2 Hz Cutoff
-            for joint in positions.keys():
+            for joint in list(positions.keys()):
                 cmd[joint] = 0.012488 * positions[joint] + 0.98751 * cmd[joint]
             return cmd
 
@@ -434,7 +434,7 @@ class Limb(object):
                 return abs(angle - self._joint_angle[joint])
             return joint_diff
 
-        diffs = [genf(j, a) for j, a in positions.items() if
+        diffs = [genf(j, a) for j, a in list(positions.items()) if
                  j in self._joint_angle]
 
         self.set_joint_positions(filtered_cmd())

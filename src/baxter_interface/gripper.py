@@ -362,8 +362,8 @@ class Gripper(object):
             self._parameters = valid_parameters
         if parameters is None:
             parameters = dict()
-        for key in parameters.keys():
-            if key in valid_parameters.keys():
+        for key in list(parameters.keys()):
+            if key in list(valid_parameters.keys()):
                 self._parameters[key] = parameters[key]
             else:
                 msg = ("Invalid parameter: %s provided. %s" %

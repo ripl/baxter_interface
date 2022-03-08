@@ -34,7 +34,7 @@ import math
 import operator
 import numpy as np
 
-import bezier
+from . import bezier
 
 import rospy
 
@@ -191,8 +191,8 @@ class JointTrajectoryActionServer(object):
 
     def _get_current_error(self, joint_names, set_point):
         current = self._get_current_position(joint_names)
-        error = map(operator.sub, set_point, current)
-        return zip(joint_names, error)
+        error = list(map(operator.sub, set_point, current))
+        return list(zip(joint_names, error))
 
     def _update_feedback(self, cmd_point, jnt_names, cur_time):
         self._fdbk.header.stamp = rospy.Duration.from_sec(rospy.get_time())
@@ -201,10 +201,10 @@ class JointTrajectoryActionServer(object):
         self._fdbk.desired.time_from_start = rospy.Duration.from_sec(cur_time)
         self._fdbk.actual.positions = self._get_current_position(jnt_names)
         self._fdbk.actual.time_from_start = rospy.Duration.from_sec(cur_time)
-        self._fdbk.error.positions = map(operator.sub,
+        self._fdbk.error.positions = list(map(operator.sub,
                                          self._fdbk.desired.positions,
                                          self._fdbk.actual.positions
-                                        )
+                                        ))
         self._fdbk.error.time_from_start = rospy.Duration.from_sec(cur_time)
         self._server.publish_feedback(self._fdbk)
 
@@ -212,15 +212,15 @@ class JointTrajectoryActionServer(object):
 	joint_name_order = self._limb.joint_names()
 	pnt = JointTrajectoryPoint()
 	pnt.time_from_start = point.time_from_start
-	pos_cmd = dict(zip(joint_names, point.positions))
+	pos_cmd = dict(list(zip(joint_names, point.positions)))
 	for jnt_name in joint_name_order:
 	    pnt.positions.append(pos_cmd[jnt_name])
         if point.velocities:
-	    vel_cmd = dict(zip(joint_names, point.velocities))
+	    vel_cmd = dict(list(zip(joint_names, point.velocities)))
 	    for jnt_name in joint_name_order:
 	        pnt.velocities.append(vel_cmd[jnt_name])
         if point.accelerations:
-	    accel_cmd = dict(zip(joint_names, point.accelerations))
+	    accel_cmd = dict(list(zip(joint_names, point.accelerations)))
 	    for jnt_name in joint_name_order:
 	        pnt.accelerations.append(accel_cmd[jnt_name])
         return pnt
@@ -228,7 +228,7 @@ class JointTrajectoryActionServer(object):
     def _command_stop(self, joint_names, joint_angles, start_time, dimensions_dict):
         if self._mode == 'velocity':
             velocities = [0.0] * len(joint_names)
-            cmd = dict(zip(joint_names, velocities))
+            cmd = dict(list(zip(joint_names, velocities)))
             while (not self._server.is_new_goal_available() and self._alive
                    and self.robot_is_enabled()):
                 self._limb.set_joint_velocities(cmd)
@@ -279,14 +279,14 @@ class JointTrajectoryActionServer(object):
                 velocities.append(self._pid[delta[0]].compute_output(delta[1]))
         if ((self._mode == 'position' or self._mode == 'position_w_id')
               and self._alive):
-            cmd = dict(zip(joint_names, point.positions))
+            cmd = dict(list(zip(joint_names, point.positions)))
             raw_pos_mode = (self._mode == 'position_w_id')
             self._limb.set_joint_positions(cmd, raw=raw_pos_mode)
             if raw_pos_mode:
                 ff_pnt = self._reorder_joints_ff_cmd(joint_names, point)
                 self._pub_ff_cmd.publish(ff_pnt)
         elif self._alive:
-            cmd = dict(zip(joint_names, velocities))
+            cmd = dict(list(zip(joint_names, velocities)))
             self._limb.set_joint_velocities(cmd)
         return True
 
@@ -318,7 +318,7 @@ class JointTrajectoryActionServer(object):
         num_traj_dim = sum(dimensions_dict.values())
         num_b_values = len(['b0', 'b1', 'b2', 'b3'])
         b_matrix = np.zeros(shape=(num_joints, num_traj_dim, num_traj_pts-1, num_b_values))
-        for jnt in xrange(num_joints):
+        for jnt in range(num_joints):
             traj_array = np.zeros(shape=(len(trajectory_points), num_traj_dim))
             for idx, point in enumerate(trajectory_points):
                 current_point = list()
@@ -443,7 +443,7 @@ class JointTrajectoryActionServer(object):
         # Keep trying to meet goal until goal_time constraint expired
         last = trajectory_points[-1]
         last_time = trajectory_points[-1].time_from_start.to_sec()
-        end_angles = dict(zip(joint_names, last.positions))
+        end_angles = dict(list(zip(joint_names, last.positions)))
 
         def check_goal_state():
             for error in self._get_current_error(joint_names, last.positions):

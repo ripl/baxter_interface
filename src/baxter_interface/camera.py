@@ -255,7 +255,7 @@ class CameraController(object):
         x = self._get_value(CameraControl.CAMERA_CONTROL_WINDOW_X,
                             self.CONTROL_AUTO)
         if (x == self.CONTROL_AUTO):
-            return (tuple(map(lambda x: x / 2, self.resolution)) if
+            return (tuple([x / 2 for x in self.resolution]) if
             self.half_resolution else
             self.resolution)
         else:

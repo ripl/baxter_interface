@@ -69,7 +69,7 @@ class AnalogIO(object):
             self._on_io_state)
 
         baxter_dataflow.wait_for(
-            lambda: len(self._state.keys()) != 0,
+            lambda: len(list(self._state.keys())) != 0,
             timeout=2.0,
             timeout_msg="Failed to get current analog_io state from %s" \
             % (topic_base,),
