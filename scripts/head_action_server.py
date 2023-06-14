@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2013-2015, Rethink Robotics
 # All rights reserved.
@@ -33,15 +33,9 @@ Baxter RSDK Head Action Server
 import argparse
 
 import rospy
-
+from baxter_interface.cfg import HeadActionServerConfig
 from dynamic_reconfigure.server import Server
-
-from baxter_interface.cfg import (
-    HeadActionServerConfig
-)
-from head_action.head_action import (
-    HeadActionServer,
-)
+from head_action.head_action import HeadActionServer
 
 
 def start_server():
@@ -56,8 +50,10 @@ def start_server():
     print("Running. Ctrl-c to quit")
     rospy.spin()
 
+
 def main():
     start_server()
+
 
 if __name__ == "__main__":
     main()

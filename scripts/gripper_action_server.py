@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2013-2015, Rethink Robotics
 # All rights reserved.
@@ -33,15 +33,9 @@ Baxter RSDK Gripper Action Server
 import argparse
 
 import rospy
-
+from baxter_interface.cfg import GripperActionServerConfig
 from dynamic_reconfigure.server import Server
-
-from baxter_interface.cfg import (
-    GripperActionServerConfig
-)
-from gripper_action.gripper_action import (
-    GripperActionServer,
-)
+from gripper_action.gripper_action import GripperActionServer
 
 
 def start_server(gripper):

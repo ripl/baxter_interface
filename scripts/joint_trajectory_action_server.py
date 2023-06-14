@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2013-2015, Rethink Robotics
 # All rights reserved.
@@ -35,21 +35,10 @@ Baxter RSDK Joint Trajectory Controller
 import argparse
 
 import rospy
-
+from baxter_interface.cfg import PositionFFJointTrajectoryActionServerConfig, PositionJointTrajectoryActionServerConfig, VelocityJointTrajectoryActionServerConfig
 from dynamic_reconfigure.server import Server
-
-from baxter_interface.cfg import (
-    PositionJointTrajectoryActionServerConfig,
-    VelocityJointTrajectoryActionServerConfig,
-    PositionFFJointTrajectoryActionServerConfig,
-)
-from joint_trajectory_action.joint_trajectory_action import (
-    JointTrajectoryActionServer,
-)
-
-from trajectory_msgs.msg import (
-    JointTrajectoryPoint,
-)
+from joint_trajectory_action.joint_trajectory_action import JointTrajectoryActionServer
+from trajectory_msgs.msg import JointTrajectoryPoint
 
 
 def start_server(limb, rate, mode):
